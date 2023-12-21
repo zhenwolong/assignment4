@@ -1,0 +1,95 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Statistics</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Event listener for closest cities form
+            $("#closestCitiesForm").submit(function(event) {
+                event.preventDefault();
+                submitForm("/stat/closest_cities", $(this));
+            });
+
+            // Event listener for KNN reviews form
+            $("#knnReviewsForm").submit(function(event) {
+                event.preventDefault();
+                submitForm("/stat/knn_reviews", $(this));
+            });
+
+            // Event listener for flush cache form
+            $("#flushCacheForm").submit(function(event) {
+                event.preventDefault();
+                submitForm("/flush_cache", $(this));
+            });
+
+            // Event listener for toggle cache form
+            $("#toggleCacheForm").submit(function(event) {
+                event.preventDefault();
+                submitForm("/toggle_cache", $(this));
+            });
+
+            function submitForm(url, form) {
+                $.ajax({
+                    type: form.attr("method"),
+                    url: form.attr("action"),
+                    data: form.serialize(),
+                    success: function(data) {
+                        displayResults(data);
+                    },
+                    error: function(error) {
+                        console.error("Error:", error);
+                    }
+                });
+            }
+
+            function displayResults(data) {
+                $("#result").html("<pre>" + JSON.stringify(data, null, 2) + "</pre>");
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Zhang Zhen 75973 and Zhang Wenshuo 76361</h1>
+       <!-- Flush Cache button -->
+    <form id="flushCacheForm" action="/flush_cache" method="post">
+        <button type="submit">Flush Cache</button>
+    </form>
+
+    <!-- Toggle Cache button -->
+    <form id="toggleCacheForm" action="/toggle_cache" method="get">
+        <button type="submit"> Redis Cache</button>
+    </form>
+    <h2>Question10</h2>
+    <!-- Form for closest cities -->
+    <form id="closestCitiesForm" action="/stat/closest_cities" method="get">
+        <label for="city">City Name:</label>
+        <input type="text" id="city" name="city" required>
+        <label for="page_size">Page Size:</label>
+        <input type="number" id="page_size" name="page_size" value="50" min="1">
+        <label for="page">Page Number:</label>
+        <input type="number" id="page" name="page" value="0" min="0">
+        <button type="submit">Get Closest Cities</button>
+    </form>
+    <br>
+    <h2>Question11</h2>
+    <!-- Form for KNN reviews -->
+    <form id="knnReviewsForm" action="/stat/knn_reviews" method="get">
+        <label for="classes">Number of Classes:</label>
+        <input type="number" id="classes" name="classes" value="6" min="1">
+        <label for="k">K Value:</label>
+        <input type="number" id="k" name="k" value="3" min="1">
+        <label for="words">Number of Words:</label>
+        <input type="number" id="words" name="words" value="100" min="1">
+        <button type="submit">Get KNN Reviews</button>
+    </form>
+
+    <div id="result">
+        <!-- Display results here -->
+    </div>
+</body>
+</html>
+
